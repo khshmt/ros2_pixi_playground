@@ -5,7 +5,7 @@ project(ros2_pixi_playground LANGUAGES CXX C)
 # C++ Standard
 # ------------------------------------------------------------------------------
 if(NOT CMAKE_CXX_STANDARD)
-  set(CMAKE_CXX_STANDARD 17)
+  set(CMAKE_CXX_STANDARD 20)
 endif()
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -22,6 +22,7 @@ find_package(message_filters REQUIRED)
 find_package(OpenCV REQUIRED)
 find_package(cv_bridge REQUIRED)
 find_package(image_transport REQUIRED)
+find_package(rerun_sdk REQUIRED)
 
 set(ROS2_DEPENDENCIES
     rclcpp::rclcpp
@@ -32,6 +33,7 @@ set(ROS2_DEPENDENCIES
     ${OpenCV_LIBS}
     cv_bridge::cv_bridge
     image_transport::image_transport
+    rerun_sdk
 )
 
 # ------------------------------------------------------------------------------
@@ -64,5 +66,16 @@ add_executable(usbCameraPublisher
 )
 
 target_link_libraries(usbCameraPublisher
+    ${ROS2_DEPENDENCIES}
+)
+
+# ------------------------------------------------------------------------------
+# visualizer Executable
+# ------------------------------------------------------------------------------
+add_executable(visualizer
+    src/visualizer.cpp
+)
+
+target_link_libraries(visualizer
     ${ROS2_DEPENDENCIES}
 )

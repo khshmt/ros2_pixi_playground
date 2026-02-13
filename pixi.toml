@@ -21,6 +21,8 @@ ros-humble-sensor-msgs = ">=4.9.0,<5"
 ros-humble-vision-opencv = ">=3.2.1,<4"
 ros-humble-cv-bridge = ">=3.2.1,<4"
 ros-humble-image-transport = ">=3.1.12,<4"
+rerun-sdk = ">=0.29.2,<0.30"
+librerun-sdk = ">=0.29.2,<0.30"
 
 [tasks]
 clean = "rm -rf build"
@@ -30,3 +32,4 @@ build = "cmake --build build"
 publisher = "build/publisher"
 subscriber = "build/subscriber"
 usbCameraPublisher = "build/usbCameraPublisher"
+visualizer = "build/visualizer"

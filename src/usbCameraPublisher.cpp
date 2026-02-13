@@ -18,9 +18,9 @@ public:
   UsbCameraImagesPublisher()
       : Node("opencv_image_publisher") {
     imagePublisher_ =
-      this->create_publisher<sensor_msgs::msg::Image>("/image", 10);
+      this->create_publisher<sensor_msgs::msg::Image>("/camera/image_raw", 10);
     cameraInfoPublisher_ =
-      this->create_publisher<sensor_msgs::msg::CameraInfo>("/camera_info", 10);
+      this->create_publisher<sensor_msgs::msg::CameraInfo>("/camera/camera_info", 10);
     getting_images_thread_ =
       std::thread(&UsbCameraImagesPublisher::getting_images_from_camera, this);
 
@@ -52,7 +52,7 @@ private:
   void timer_callback() {
     cv::Mat frame;
     if (!imgs_queue_.empty()) {
-      imageMsg_ =
+      auto imageMsg_ =
         cv_bridge::CvImage(std_msgs::msg::Header(), "bgr8", imgs_queue_.front())
           .toImageMsg();
 
@@ -63,13 +63,11 @@ private:
       // Publish the image to the topic defined in the publisher
       imagePublisher_->publish(*imageMsg_.get());
       cameraInfoPublisher_->publish(cameraInfoMsg_);
-      RCLCPP_INFO(this->get_logger(), "Image %ld published", count_);
       std::lock_guard<std::mutex> lock_(m_);
       imgs_queue_.pop();
     }
   }
   rclcpp::TimerBase::SharedPtr timer_;
-  sensor_msgs::msg::Image::SharedPtr imageMsg_;
   sensor_msgs::msg::CameraInfo cameraInfoMsg_;
   rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr imagePublisher_;
   rclcpp::Publisher<sensor_msgs::msg::CameraInfo>::SharedPtr
