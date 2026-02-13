@@ -19,6 +19,9 @@ find_package(std_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(rosbag2_cpp REQUIRED)
 find_package(message_filters REQUIRED)
+find_package(OpenCV REQUIRED)
+find_package(cv_bridge REQUIRED)
+find_package(image_transport REQUIRED)
 
 set(ROS2_DEPENDENCIES
     rclcpp::rclcpp
@@ -26,6 +29,9 @@ set(ROS2_DEPENDENCIES
     ${sensor_msgs_TARGETS}
     rosbag2_cpp::rosbag2_cpp
     message_filters::message_filters
+    ${OpenCV_LIBS}
+    cv_bridge::cv_bridge
+    image_transport::image_transport
 )
 
 # ------------------------------------------------------------------------------
@@ -47,5 +53,16 @@ add_executable(subscriber
 )
 
 target_link_libraries(subscriber
+    ${ROS2_DEPENDENCIES}
+)
+
+# ------------------------------------------------------------------------------
+# usbCameraPublisher Executable
+# ------------------------------------------------------------------------------
+add_executable(usbCameraPublisher
+    src/usbCameraPublisher.cpp
+)
+
+target_link_libraries(usbCameraPublisher
     ${ROS2_DEPENDENCIES}
 )
