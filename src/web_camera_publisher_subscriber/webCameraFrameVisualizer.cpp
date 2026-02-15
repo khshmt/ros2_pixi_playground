@@ -25,11 +25,15 @@ public:
 
 private:
   void imageCallback(const sensor_msgs::msg::Image::ConstSharedPtr& msg) {
-    auto img = cv_bridge::toCvShare(msg, "rgb8")->image;
+    auto cv_ptr = cv_bridge::toCvShare(msg);
+    const auto& img = cv_ptr->image;
+    rerun::datatypes::ColorModel model = (msg->encoding == "rgb8")
+                                           ? rerun::datatypes::ColorModel::RGB
+                                           : rerun::datatypes::ColorModel::BGR;
     rec_.log("camera/image", rerun::Image(img.data,
                                           {static_cast<uint32_t>(img.cols),
                                            static_cast<uint32_t>(img.rows)},
-                                          rerun::datatypes::ColorModel::RGB));
+                                          model));
   }
 
 private:
@@ -37,7 +41,7 @@ private:
   const rerun::RecordingStream rec_;
 };
 
-int main(int argc, char** argv) {
+int main(int argc, char* argv[]) {
   rclcpp::init(argc, argv);
   auto node = std::make_shared<RerunCameraNode>();
   rclcpp::spin(node);

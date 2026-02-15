@@ -4,10 +4,7 @@ project(ros2_pixi_playground LANGUAGES CXX C)
 # ------------------------------------------------------------------------------
 # C++ Standard
 # ------------------------------------------------------------------------------
-if(NOT CMAKE_CXX_STANDARD)
-  set(CMAKE_CXX_STANDARD 20)
-endif()
-
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
