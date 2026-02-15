@@ -15,7 +15,7 @@ using namespace std::chrono_literals;
 
 class FramePublisher : public rclcpp::Node {
 public:
-  FramePublisher() : Node("usb_camera_publisher") {
+  FramePublisher(const rclcpp::NodeOptions & options = rclcpp::NodeOptions()) : Node("usb_camera_publisher", options) {
     if (!cap_.isOpened()) {
       RCLCPP_FATAL(this->get_logger(), "Failed to open camera!!");
       rclcpp::shutdown();
@@ -85,7 +85,8 @@ private:
 
 int main(int argc, char* argv[]) {
   rclcpp::init(argc, argv);
-  auto node = std::make_shared<FramePublisher>();
+  auto options = rclcpp::NodeOptions().use_intra_process_comms(true);
+  auto node = std::make_shared<FramePublisher>(options);
   rclcpp::spin(node);
   rclcpp::shutdown();
   return 0;

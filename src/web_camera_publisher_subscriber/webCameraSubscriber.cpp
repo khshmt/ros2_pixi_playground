@@ -8,7 +8,7 @@
 
 class FrameSubscriberRecorder : public rclcpp::Node {
 public:
-  FrameSubscriberRecorder() : Node("frame_subscriber_recorder") {
+  FrameSubscriberRecorder(const rclcpp::NodeOptions & options = rclcpp::NodeOptions()) : Node("frame_subscriber_recorder", options) {
     writer_ = std::make_unique<rosbag2_cpp::Writer>();
 
     rosbag2_storage::StorageOptions storage_options;
@@ -42,7 +42,8 @@ private:
 
 int main(int argc, char* argv[]) {
   rclcpp::init(argc, argv);
-  auto node = std::make_shared<FrameSubscriberRecorder>();
+  auto options = rclcpp::NodeOptions().use_intra_process_comms(true);
+  auto node = std::make_shared<FrameSubscriberRecorder>(options);
   rclcpp::spin(node);
   rclcpp::shutdown();
   return 0;

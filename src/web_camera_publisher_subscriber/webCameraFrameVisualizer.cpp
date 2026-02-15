@@ -8,7 +8,7 @@
 
 class RerunCameraNode : public rclcpp::Node {
 public:
-  RerunCameraNode() : Node("rerun_camera_node"), rec_("ros2_camera") {
+  RerunCameraNode(const rclcpp::NodeOptions & options = rclcpp::NodeOptions()) : Node("rerun_camera_node", options), rec_("ros2_camera") {
     // Start Rerun viewer
     rec_.spawn(rerun::SpawnOptions{.memory_limit = "1GB"}).exit_on_failure();
     if(!rec_.is_enabled()) {
@@ -43,7 +43,8 @@ private:
 
 int main(int argc, char* argv[]) {
   rclcpp::init(argc, argv);
-  auto node = std::make_shared<RerunCameraNode>();
+  auto options = rclcpp::NodeOptions().use_intra_process_comms(true);
+  auto node = std::make_shared<RerunCameraNode>(options);
   rclcpp::spin(node);
   rclcpp::shutdown();
   return 0;
