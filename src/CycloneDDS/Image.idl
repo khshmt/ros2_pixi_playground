@@ -1,0 +1,10 @@
+module camera
+{
+  struct Image
+  {
+    uint32 width;
+    uint32 height;
+    uint64 timestamp;
+    sequence<uint8> data;
+  };
+};

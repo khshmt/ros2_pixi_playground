@@ -20,6 +20,7 @@ find_package(OpenCV REQUIRED)
 find_package(cv_bridge REQUIRED)
 find_package(image_transport REQUIRED)
 find_package(rerun_sdk REQUIRED)
+find_package(CycloneDDS REQUIRED)
 
 include(FetchContent)
 FetchContent_Declare(
@@ -96,3 +97,5 @@ add_executable(webCameraFrameVisualizer
 target_link_libraries(webCameraFrameVisualizer
     ${ROS2_DEPENDENCIES}
 )
+
+add_subdirectory(src/CycloneDDS)
