@@ -42,9 +42,20 @@ int main(int argc, char* argv[]) {
         /* Polling sleep. */
         dds_sleepfor(DDS_MSECS(20));
     }
+#ifdef _WIN32
+    cv::VideoCapture cap(0, cv::CAP_DSHOW);
+#elif __linux__
     cv::VideoCapture cap(0);
-    cap.set(cv::CAP_PROP_FOURCC, cv::VideoWriter::fourcc('M','J','P','G'));
+#endif
+    //Force MJPG
+    cap.set(cv::CAP_PROP_FOURCC, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'));
+    //Set resolution
+    cap.set(cv::CAP_PROP_FRAME_WIDTH, 1280);
+    cap.set(cv::CAP_PROP_FRAME_HEIGHT, 720);
+    //Set FPS
     cap.set(cv::CAP_PROP_FPS, 30);
+    //Reduce buffering
+    cap.set(cv::CAP_PROP_BUFFERSIZE, 1);
 
     while (true) {
         cv::Mat frame;
