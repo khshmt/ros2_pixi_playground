@@ -12,7 +12,8 @@ public:
     writer_ = std::make_unique<rosbag2_cpp::Writer>();
 
     rosbag2_storage::StorageOptions storage_options;
-    storage_options.uri = "my_bag";
+    storage_options.uri =
+      std::to_string(this->get_clock()->now().nanoseconds()) + "_bag";
     storage_options.storage_id = "mcap";
 
     rosbag2_cpp::ConverterOptions converter_options{
