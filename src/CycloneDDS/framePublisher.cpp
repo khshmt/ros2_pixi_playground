@@ -57,16 +57,23 @@ int main(int argc, char* argv[]) {
     //Reduce buffering
     cap.set(cv::CAP_PROP_BUFFERSIZE, 1);
 
+    size_t size{};
+    { // Grab one frame to get the size of the buffer needed for the DDS message
+      cv::Mat frame;
+      if (cap.read(frame)) {
+        size = frame.total() * frame.elemSize();
+        msg.data._length = size;
+        msg.data._maximum = size;
+        msg.data._release = false;
+        msg.data._buffer = (uint8_t*)malloc(size);
+      }
+    }
+
     while (true) {
         cv::Mat frame;
         if (!cap.read(frame))
             continue;
 
-        size_t size = frame.total() * frame.elemSize();
-        msg.data._length = size;
-        msg.data._maximum = size;
-        msg.data._release = true;
-        msg.data._buffer = (uint8_t*)malloc(size);
         memcpy(msg.data._buffer, frame.data, size);
         msg.width = frame.cols;
         msg.height = frame.rows;
