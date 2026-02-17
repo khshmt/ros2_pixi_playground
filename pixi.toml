@@ -28,7 +28,7 @@ ros-humble-cyclonedds = ">=0.10.5,<0.11"
 [tasks]
 clean = "rm -rf build"
 config = "cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release"
-build = "cmake --build build"
+build = {cmd = "cmake --build build", depends-on = ["config"]}
 
 publisher = "build/publisher"
 subscriber = "build/subscriber"

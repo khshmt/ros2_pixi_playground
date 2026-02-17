@@ -1,0 +1,16 @@
+<CycloneDDS>
+  <Domain>
+    <General>
+      <Interfaces>
+        <NetworkInterface address="169.254.14.97"/>
+      </Interfaces>
+      <AllowMulticast>true</AllowMulticast>
+    </General>
+
+    <Discovery>
+      <Peers>
+        <Peer address="169.254.36.58"/>
+      </Peers>
+    </Discovery>
+  </Domain>
+</CycloneDDS>
