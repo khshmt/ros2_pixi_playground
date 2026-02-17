@@ -9,21 +9,24 @@ public:
   SimplePublisher() : Node("simple_publisher") {
     publisher_ = this->create_publisher<std_msgs::msg::String>("my_topic", 10);
     timer_ = this->create_wall_timer(
-      std::chrono::steady_clock::duration(50ms),
+      std::chrono::steady_clock::duration(100ms),
       std::bind(&SimplePublisher::timer_callback, this));
   }
 
 private:
   void timer_callback() {
     std_msgs::msg::String message;
-    message.set__data("Hello, ROS 2 with Pixi!");
+    message.set__data("Hello, ROS 2 with Pixi! (message count: " +
+                      std::to_string(message_count_) + ")");
     RCLCPP_INFO(this->get_logger(), "Publishing: '%s'", message.data.c_str());
     publisher_->publish(message);
+    message_count_++;
   }
 
 private:
   rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_;
   rclcpp::TimerBase::SharedPtr timer_;
+  size_t message_count_{0};
 };
 
 int main(int argc, char* argv[]) {

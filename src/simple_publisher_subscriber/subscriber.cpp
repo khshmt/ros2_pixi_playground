@@ -6,13 +6,16 @@
 #include "rosbag2_cpp/storage_options.hpp"
 #include "rosbag2_cpp/writer.hpp"
 
+#include "std_msgs/msg/string.hpp"
+
 class SimpleSubscriberRecorder : public rclcpp::Node {
 public:
   SimpleSubscriberRecorder() : Node("simple_subscriber_recorder") {
     writer_ = std::make_unique<rosbag2_cpp::Writer>();
 
     rosbag2_storage::StorageOptions storage_options;
-    storage_options.uri = "my_bag";
+    storage_options.uri =
+      std::to_string(this->get_clock()->now().nanoseconds()) + "_bag";
     storage_options.storage_id = "mcap";
 
     rosbag2_cpp::ConverterOptions converter_options{
@@ -23,11 +26,15 @@ public:
     writer_->create_topic({topic_data_.topic_name_, topic_data_.type_name_,
                            rmw_get_serialization_format(), ""});
 
-    subscription_ = this->create_generic_subscription(
-      topic_data_.topic_name_, topic_data_.type_name_, rclcpp::QoS(10),
-      [this](std::shared_ptr<rclcpp::SerializedMessage> msg) {
-        writer_->write(msg, topic_data_.topic_name_, topic_data_.type_name_,
-                       this->now());
+    subscriber_ = this->create_subscription<std_msgs::msg::String>(
+      topic_data_.topic_name_, rclcpp::QoS(10),
+      [this](const std_msgs::msg::String::SharedPtr msg) {
+        rclcpp::SerializedMessage serialized_msg;
+        rclcpp::Serialization<std_msgs::msg::String> serializer;
+        serializer.serialize_message(msg.get(), &serialized_msg);
+        RCLCPP_INFO(this->get_logger(), "Subscribing: '%s'", msg->data.c_str());
+        writer_->write(serialized_msg, topic_data_.topic_name_,
+                       topic_data_.type_name_, this->now());
       });
   }
 
@@ -37,7 +44,7 @@ private:
     std::string type_name_{"std_msgs/msg/String"};
   } topic_data_;
   std::unique_ptr<rosbag2_cpp::Writer> writer_;
-  rclcpp::GenericSubscription::SharedPtr subscription_;
+  rclcpp::Subscription<std_msgs::msg::String>::SharedPtr subscriber_;
 };
 
 int main(int argc, char* argv[]) {
