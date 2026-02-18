@@ -24,9 +24,14 @@ int main(int argc, char* argv[]) {
   if (topic < 0)
     DDS_FATAL("dds_create_topic: %s\n", dds_strretcode(-topic));
 
-  // create a reliable Writer
+  // Create a quality of service for the Reader and create the Reader.
   qos = dds_create_qos();
-  dds_qset_reliability(qos, DDS_RELIABILITY_RELIABLE, DDS_SECS(1));
+  // Reliable reader with a max blocking time of 1 second
+  dds_qset_reliability(qos, DDS_RELIABILITY_BEST_EFFORT, DDS_MSECS(0));
+  // Transient local durability
+  dds_qset_durability(qos, DDS_DURABILITY_VOLATILE);
+  // Keep all history to ensure we receive the latest image even if we start the subscriber after the publisher
+  dds_qset_history(qos, DDS_HISTORY_KEEP_LAST, 1);
   writer = dds_create_writer(participant, topic, qos, NULL);
   if (writer < 0)
     DDS_FATAL("dds_create_writer: %s\n", dds_strretcode(-writer));
