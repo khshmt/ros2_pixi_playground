@@ -8,7 +8,9 @@
 
 class FrameSubscriberRecorder : public rclcpp::Node {
 public:
-  FrameSubscriberRecorder(const rclcpp::NodeOptions & options = rclcpp::NodeOptions()) : Node("frame_subscriber_recorder", options) {
+  FrameSubscriberRecorder(
+    const rclcpp::NodeOptions& options = rclcpp::NodeOptions())
+      : Node("frame_subscriber_recorder", options) {
     writer_ = std::make_unique<rosbag2_cpp::Writer>();
 
     rosbag2_storage::StorageOptions storage_options;
@@ -21,24 +23,28 @@ public:
 
     writer_->open(storage_options, converter_options);
 
-    writer_->create_topic({topic_data_.topic_name_, topic_data_.type_name_,
+    writer_->create_topic({"/camera/image_raw", "sensor_msgs/msg/Image",
                            rmw_get_serialization_format(), ""});
     auto qos = rclcpp::SensorDataQoS().keep_last(1).best_effort();
-    subscription_ = this->create_generic_subscription(
-      topic_data_.topic_name_, topic_data_.type_name_, qos,
+    cameraSubscriber_ = this->create_generic_subscription(
+      "/camera/image_raw", "sensor_msgs/msg/Image", qos,
       [this](std::shared_ptr<rclcpp::SerializedMessage> msg) {
-        writer_->write(msg, topic_data_.topic_name_, topic_data_.type_name_,
+        writer_->write(msg, "/camera/image_raw", "sensor_msgs/msg/Image",
                        this->now());
+      });
+
+    stringSubscriber_ = this->create_generic_subscription(
+      "/str_message", "std_msgs/msg/String", qos,
+      [this](std::shared_ptr<rclcpp::SerializedMessage> msg) {
+        writer_->write(msg, "/str_message", "std_msgs/msg/String", this->now());
       });
   }
 
 private:
-  struct topicData {
-    std::string topic_name_{"/camera/image_raw"};
-    std::string type_name_{"sensor_msgs/msg/Image"};
-  } topic_data_;
   std::unique_ptr<rosbag2_cpp::Writer> writer_;
-  rclcpp::GenericSubscription::SharedPtr subscription_;
+  rclcpp::GenericSubscription::SharedPtr cameraSubscriber_;
+  rclcpp::GenericSubscription::SharedPtr stringSubscriber_;
+
 };
 
 int main(int argc, char* argv[]) {

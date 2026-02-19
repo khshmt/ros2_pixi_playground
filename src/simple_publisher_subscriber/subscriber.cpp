@@ -40,7 +40,7 @@ public:
 
 private:
   struct topicData {
-    std::string topic_name_{"my_topic"};
+    std::string topic_name_{"/str_message"};
     std::string type_name_{"std_msgs/msg/String"};
   } topic_data_;
   std::unique_ptr<rosbag2_cpp::Writer> writer_;

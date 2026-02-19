@@ -7,7 +7,7 @@ using namespace std::chrono_literals;
 class SimplePublisher : public rclcpp::Node {
 public:
   SimplePublisher() : Node("simple_publisher") {
-    publisher_ = this->create_publisher<std_msgs::msg::String>("my_topic", 10);
+    publisher_ = this->create_publisher<std_msgs::msg::String>("/str_message", 10);
     timer_ = this->create_wall_timer(
       std::chrono::steady_clock::duration(100ms),
       std::bind(&SimplePublisher::timer_callback, this));
